@@ -70,6 +70,7 @@
 }
 
     .subtitle a {
+        color: #00ffff;
         font-size: 24px;
     }
 
@@ -98,6 +99,7 @@
     display: block;
     background-color: white;
     left: 0;
+    right: 0;
     padding-top: 25px;
     padding-bottom: 25px;
     width: 100%;
@@ -137,6 +139,21 @@
                     max-height: 100%;
                     object-fit: contain;
                 }
+
+.card {
+    background-color: #F3F3F3;
+    margin: 10px;
+}
+    .card h3 {
+        font-family: roboto;
+        margin-bottom: 0;
+    }
+
+    .card p {
+        font-family: robotoM;
+        text-align: left;
+        margin-top: 0;
+    }
 
 
 p {
