@@ -1,0 +1,152 @@
+@font-face {
+    font-family: roboto;
+    src: url("./RobotoSlab-Regular.ttf");
+}
+
+@font-face {
+    font-family: robotoL;
+    src: url("./RobotoSlab-Light.ttf");
+}
+
+@font-face {
+    font-family: robotoM;
+    src: url("./RobotoMono-Light.ttf");
+}
+
+.navbar {
+    overflow: hidden;
+    background-color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2;
+}
+
+    .navbar img {
+        display: block;
+        float: left;
+        height: 48px;
+        width: auto;
+    }
+
+    .navbar a {
+        display: block;
+        float: right;
+        font-family: roboto;
+        font-size: 16px;
+        color: black;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    .navbar .except {
+        display: block;
+        float: left;
+        padding: 0px 0px;
+    }
+
+
+.title {
+    font-family: robotoL;
+    font-size: 48px;
+    color: white;
+    text-align: right;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.subtitle {
+    font-family: robotoL;
+    font-size: 48px;
+    color: white;
+    text-align: center;
+    margin: 0;
+}
+
+    .subtitle a {
+        font-size: 24px;
+    }
+
+.Mainsection {
+    display: block;
+    background-color: white;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+}
+
+    .Mainsection h2 {
+        font-family: robotoL;
+        text-align: center;
+        color: black;
+    }
+
+    .Mainsection p {
+        font-family: robotoM;
+        text-align: center;
+        color: black;
+    }
+
+.section {
+    display: block;
+    background-color: white;
+    left: 0;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    width: 100%;
+    top: 200px;
+}
+
+    .section h2 {
+        font-family: robotoL;
+        text-align: center;
+        color: black;
+    }
+
+    .section p {
+        font-family: robotoM;
+        text-align: center;
+        color: black;
+    }
+
+    .section table {
+        font-family: robotoM;
+        text-align: center;
+        color: black;
+        table-layout: fixed;
+        width: 100%;
+    }
+        .section table tr td {
+            padding: 10px;
+            width: 25%;
+        }
+
+            .section table tr td div {
+                position: relative;
+                overflow: hidden;
+            }
+                .section table tr td div img {
+                    max-width: 100%;
+                    max-height: 100%;
+                    object-fit: contain;
+                }
+
+
+p {
+    font-family: roboto;
+    color: white;
+}
+
+body {
+    background-image: url("./background.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
