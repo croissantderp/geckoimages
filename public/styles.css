@@ -76,10 +76,10 @@
 
 .Mainsection {
     display: block;
+    position: relative;
     background-color: white;
-    position: absolute;
-    top: 100%;
-    left: 0;
+    padding: 5px;
+    margin-top: 100vh;
     width: 100%;
 }
 
@@ -97,13 +97,10 @@
 
 .section {
     display: block;
+    position: relative;
     background-color: white;
-    left: 0;
-    right: 0;
-    padding-top: 25px;
-    padding-bottom: 25px;
     width: 100%;
-    top: 200px;
+    padding: 5px;
 }
 
     .section h2 {
@@ -141,11 +138,14 @@
                 }
 
 .card {
-    background-color: #F3F3F3;
+    background-color: #EEEEEE;
     margin: 10px;
+    padding: 10px;
+    width: 25%
 }
     .card h3 {
         font-family: roboto;
+        margin-top: 2.5px;
         margin-bottom: 0;
     }
 
@@ -154,6 +154,23 @@
         text-align: left;
         margin-top: 0;
     }
+
+    .card img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .card div {
+        margin-left: auto;
+        margin-right: 0;
+        width: 60px;
+    }
+
+        .card div img {
+            height: 25px;
+            width: 25px;
+        }
 
 
 p {
@@ -166,4 +183,6 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
+    overflow-x: hidden;
+    margin: 0;
 }
