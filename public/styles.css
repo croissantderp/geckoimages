@@ -115,6 +115,14 @@
         color: black;
     }
 
+    .section div {
+        text-align: center;
+    }
+
+        .section div div {
+            text-align: left;
+        }
+
     .section table {
         font-family: robotoM;
         text-align: center;
@@ -122,6 +130,7 @@
         table-layout: fixed;
         width: 100%;
     }
+
         .section table tr td {
             padding: 10px;
             width: 25%;
@@ -137,38 +146,76 @@
                     object-fit: contain;
                 }
 
+#searchBar {
+    color: black;
+    margin: 0 auto;
+    text-align: center;
+}
+
+    #searchBar input {
+        font-family: robotoM;
+        font-size: 18px;
+        text-align: left;
+        border-radius: 100px;
+        border-style: hidden;
+        background-color: #EEEEEE;
+        padding: 10px;
+        width: 33%;
+        text-indent: 7.5px;
+        margin-top: 19.920px;
+        margin-bottom: 19.920px;
+    }
+
+        #searchBar input:focus {
+            outline: none;
+        } 
+
 .card {
+    display: inline-grid;
     background-color: #EEEEEE;
     margin: 10px;
+    margin-right: 5px;
     padding: 10px;
-    width: 25%
+    width: 25%;
+    min-width: 120px;
+    text-align: left;
+    align-items: center;
 }
     .card h3 {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
         font-family: roboto;
         margin-top: 2.5px;
         margin-bottom: 0;
     }
 
     .card p {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
         font-family: robotoM;
         text-align: left;
         margin-top: 0;
     }
 
     .card img {
-        max-width: 100%;
         max-height: 100%;
+        max-width: 100%;
         object-fit: contain;
     }
 
     .card div {
         margin-left: auto;
         margin-right: 0;
-        width: 60px;
+        margin-top: 5px;
+        width: 70px;
     }
 
         .card div img {
             height: 25px;
+            margin-right: 0;
+            margin-left: 5px;
             width: 25px;
         }
 

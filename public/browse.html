@@ -7,6 +7,110 @@
 
     <script src="jquery-3.6.0.min.js"></script>
 
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () { Initialrender(); initiate(); });
+
+        function initiate() {
+            // Icon Click Focus
+            $('div.icon').click(function () {
+                $('input#search').focus();
+            });
+
+            //Listen for the event
+            $("input#search").on("keyup", function (e) {
+                // Set Timeout
+                clearTimeout($.data(this, 'timer'));
+
+                // Set Search String
+                render($(this).val());
+            });
+        }
+
+        var geckos = [];
+        var geckoList = {};
+
+        function render(query = "") {
+            for (let i = 0; i < geckos.length; i++) {
+                if (geckos[i].toLowerCase().includes(query.toString().toLowerCase().replace(" ", "_"))) {
+                    geckoList[geckos[i]].style.display = "inline-grid";
+                }
+                else {
+                    geckoList[geckos[i]].style.display = "none";
+                }
+            }
+        }
+
+        function Initialrender() {
+
+            $.get("./geckos/db.txt", function (data) {
+                geckos = data.split(";;;");
+
+                let geckoDiv = document.getElementById("geckoDiv");
+
+                for (let i = 0; i < geckos.length; i++) {
+
+                    if ((geckos[i] != '' && geckos[i] != null)) {
+                        //constructing bottom div
+                        let download = document.createElement('a');
+                        download.href = "./geckos/" + geckos[i];
+
+                        let downloadIcon = document.createElement('img');
+                        download.title = "download image"
+                        downloadIcon.src = "download.png";
+                        downloadIcon.alt = "download";
+
+                        download.appendChild(downloadIcon);
+
+                        let folder = document.createElement('img');
+                        folder.title = "view in Google Drive"
+                        folder.src = "folder.png";
+                        folder.alt = "drive folder";
+
+                        let div = document.createElement('div');
+                        div.appendChild(download);
+                        div.appendChild(folder);
+
+                        //titles
+                        let title = document.createElement("h3");
+                        title.innerHTML = geckos[i];
+
+                        let subtitle = document.createElement("p");
+                        subtitle.innerHTML = geckos[i];
+
+                        //creating main image
+                        let image = document.createElement('img');
+                        image.onerror = function () {
+                            this.src = "./geckos/placeholder.png"
+                            this.onerror = null;
+                        }
+                        image.title = geckos[i];
+                        image.src = "./geckos/" + geckos[i];
+                        image.alt = geckos[i];
+                        image.loading = "lazy";
+
+                        let card = document.createElement('div');
+                        card.className = "card";
+
+                        card.appendChild(title);
+                        card.appendChild(subtitle);
+                        card.appendChild(image);
+                        card.appendChild(div);
+
+                        geckoDiv.appendChild(card);
+
+                        geckoList[geckos[i]] = card;
+                    }
+                    else {
+                        geckos.splice(i--, 1);
+                    }
+                }
+
+            }, "text");
+        }
+        
+    </script>
+
     <link href="./styles.css" rel="stylesheet" />
 
     <title>Geckoimages</title>
@@ -25,22 +129,10 @@
     </div>
 
     <div class="section">
-        <h2>test</h2>
-        <p>placeholder search</p>
-
-        <div class="card">
-            <h3>
-                #000
-            </h3>
-            <p>
-                generic.png
-            </p>
-            <img src="000_generic.png" alt="000_generic.png"/>
-
-            <div>
-                <img src="download.png" alt="download" />
-                <img src="folder.png" alt="drive folder" />
-            </div>
+        <div id="searchBar">
+            <input title="Search" type="text" id="search" autocomplete="off" placeholder="Search" autofocus />
+        </div>
+        <div id="geckoDiv">
         </div>
     </div>
 </body>
