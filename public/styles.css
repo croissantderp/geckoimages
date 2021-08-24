@@ -200,6 +200,7 @@
     }
 
     .card img {
+        width: 512px;
         max-height: 100%;
         max-width: 100%;
         object-fit: contain;
@@ -209,7 +210,6 @@
         margin-left: auto;
         margin-right: 0;
         margin-top: 5px;
-        width: 70px;
     }
 
         .card div img {

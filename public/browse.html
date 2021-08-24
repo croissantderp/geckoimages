@@ -11,6 +11,9 @@
 
         document.addEventListener('DOMContentLoaded', function () { Initialrender(); initiate(); });
 
+        var query = "";
+        var currentQuery = "";
+
         function initiate() {
             // Icon Click Focus
             $('div.icon').click(function () {
@@ -23,8 +26,17 @@
                 clearTimeout($.data(this, 'timer'));
 
                 // Set Search String
-                render($(this).val());
+                query = $(this).val();
             });
+
+            setInterval(queueSearch, 500);
+        }
+
+        function queueSearch() {
+            if (query != currentQuery) {
+                render(query);
+                currentQuery = query;
+            }
         }
 
         var geckos = [];
@@ -72,11 +84,15 @@
                         div.appendChild(folder);
 
                         //titles
+                        let temp = geckos[i].split("_");
+
                         let title = document.createElement("h3");
-                        title.innerHTML = geckos[i];
+                        title.innerHTML = temp[0];
+
+                        temp.splice(0, 1);
 
                         let subtitle = document.createElement("p");
-                        subtitle.innerHTML = geckos[i];
+                        subtitle.innerHTML = temp.join("_");
 
                         //creating main image
                         let image = document.createElement('img');
@@ -132,8 +148,7 @@
         <div id="searchBar">
             <input title="Search" type="text" id="search" autocomplete="off" placeholder="Search" autofocus />
         </div>
-        <div id="geckoDiv">
-        </div>
+        <div id="geckoDiv"></div>
     </div>
 </body>
 </html>
