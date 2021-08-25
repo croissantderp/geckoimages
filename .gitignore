@@ -2,6 +2,7 @@ public/geckos
 backend/bin
 backend/obj
 backend/.vs
+backend/.vs/geckoimagesBackend
 
 .firebase/hosting.cHVibGlj.cache
 .firebaserc
