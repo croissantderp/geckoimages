@@ -1,6 +1,11 @@
 public/geckos
+backend/bin
+backend/obj
 
 .firebase/hosting.cHVibGlj.cache
 .firebaserc
 firebase-tools-instant-win.exe
 firebase.json
+geckoimagesworker-b3ff87875739.json
+firebase-debug.log
+package-lock.json

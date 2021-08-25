@@ -41,6 +41,7 @@
 
         var geckos = [];
         var geckoList = {};
+        var geckoDiv;
 
         function render(query = "") {
             for (let i = 0; i < geckos.length; i++) {
@@ -58,7 +59,7 @@
             $.get("./geckos/db.txt", function (data) {
                 geckos = data.split(";;;");
 
-                let geckoDiv = document.getElementById("geckoDiv");
+                geckoDiv = document.getElementById("geckoDiv");
 
                 for (let i = 0; i < geckos.length; i++) {
 
@@ -89,7 +90,7 @@
                         let title = document.createElement("h3");
                         title.innerHTML = temp[0];
 
-                        temp.splice(0, 1);
+                        temp.shift();
 
                         let subtitle = document.createElement("p");
                         subtitle.innerHTML = temp.join("_");
@@ -124,6 +125,103 @@
 
             }, "text");
         }
+
+        var azSelected = false;
+
+        var azReversed = false;
+        function azButton()
+        {
+            let az = document.getElementById("az");
+            if (!azSelected) {
+                sortElements("az");
+                azSelected = true;
+                az.className = "selected";
+                num.className = "unselected";
+                numReversed = false;
+                num.textContent = "0-9";
+            }
+            else {
+                if (!azReversed) {
+                    sortElements("za");
+                    azReversed = true;
+                    az.textContent = "Z-A"
+                }
+                else {
+                    sortElements("az");
+                    azReversed = false;
+                    az.textContent = "A-Z"
+                }
+            }
+        }
+
+        var numReversed = false;
+        function numButton() {
+            let num = document.getElementById("num");
+            if (azSelected) {
+                sortElements("09");
+                azSelected = false;
+                az.className = "unselected";
+                azReversed = false;
+                az.textContent = "A-Z";
+                num.className = "selected";
+            }
+            else {
+                if (!numReversed) {
+                    sortElements("90");
+                    numReversed = true;
+                    num.textContent = "9-0";
+                }
+                else {
+                    sortElements("09");
+                    numReversed = false;
+                    num.textContent = "0-9";
+                }
+            }
+        }
+        function sortElements(method) {
+            geckoDiv.innerHTML = "";
+
+            switch (method) {
+                case "09":
+                    geckos.sort();
+                    break;
+                case "90":
+                    geckos.sort();
+                    geckos.reverse();
+                    break;
+                case "az":
+                    geckos.sort(function (a, b) {
+                        c = a.split("_");
+                        d = b.split("_");
+
+                        c.shift();
+                        d.shift();
+
+                        if (c.join("_") < d.join("_")) return -1;
+                        if (c.join("_") > d.join("_")) return 1;
+                        else return 0;
+                    });
+                    break;
+                case "za":
+                    geckos.sort(function (a, b) {
+                        c = a.split("_");
+                        d = b.split("_");
+
+                        c.shift();
+                        d.shift();
+
+                        if (c.join("_") < d.join("_")) return -1;
+                        if (c.join("_") > d.join("_")) return 1;
+                        else return 0;
+                    });
+                    geckos.reverse();
+                    break;
+            }
+
+            for (let i = 0; i < geckos.length; i++) {
+                geckoDiv.appendChild(geckoList[geckos[i]]);
+            }
+        }
         
     </script>
 
@@ -145,6 +243,15 @@
     </div>
 
     <div class="section">
+        <div>
+            <button type="button" class="unselected" id="az" onclick="azButton()">
+                A-Z
+            </button>
+            <button type="button" class="selected" id="num" onclick="numButton()">
+                0-9
+            </button>
+        </div>
+
         <div id="searchBar">
             <input title="Search" type="text" id="search" autocomplete="off" placeholder="Search" autofocus />
         </div>

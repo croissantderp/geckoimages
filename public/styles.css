@@ -146,6 +146,31 @@
                     object-fit: contain;
                 }
 
+
+.unselected {
+    margin-right: 50px;
+    float: right;
+    font-family: robotoM;
+    font-size: 18px;
+    outline: none;
+    background-color: #EEEEEE;
+    border-style: hidden;
+    border-radius: 50px;
+    padding: 5px;
+}
+
+.selected {
+    margin-right: 50px;
+    float: right;
+    font-family: robotoM;
+    font-size: 18px;
+    outline: none;
+    background-color: #DDDDDD;
+    border-style: hidden;
+    border-radius: 50px;
+    padding: 5px;
+}
+
 #searchBar {
     color: black;
     margin: 0 auto;
