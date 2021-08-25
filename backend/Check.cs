@@ -91,7 +91,7 @@ namespace geckoimagesBackend
                             splitName.Remove(splitName.Last());
 
                             //updates name
-                            file.Name = string.Join(" - ", splitName) + "." + extension;
+                            file.Name = string.Join(" - ", splitName).Replace(" ", "_") + "." + extension;
 
                             //keeps same parents
                             file.Parents = a.Parents;
