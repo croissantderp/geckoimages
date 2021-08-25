@@ -57,7 +57,9 @@
         function Initialrender() {
 
             $.get("./geckos/db.txt", function (data) {
-                geckos = data.split(";;;");
+                geckos = data.split(" , ");
+
+                geckos.sort();
 
                 geckoDiv = document.getElementById("geckoDiv");
 
