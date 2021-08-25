@@ -27,7 +27,7 @@ namespace geckoimagesBackend
                     throw new Exception("ServiceAccountEmail is required.");
 
                 // These are the scopes of permissions you need. It is best to request only what you need and not all of them
-                string[] scopes = { DriveService.Scope.DriveReadonly }; // View your Google Analytics data
+                string[] scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveFile }; // View your Google Analytics data
 
                 // For Json file
                 if (Path.GetExtension(serviceAccountCredentialFilePath).ToLower() == ".json")

@@ -55,9 +55,12 @@ function Initialrender() {
         for (let i = 0; i < geckos.length; i++) {
 
             if ((geckos[i] != '' && geckos[i] != null)) {
+
+                let name = geckos[i].split("_")[0] + "." + geckos[i].split(".")[geckos[i].split(".").length - 1];
+
                 //constructing bottom div
                 let download = document.createElement('a');
-                download.href = "./geckos/" + geckos[i];
+                download.href = "./geckos/" + name;
 
                 let downloadIcon = document.createElement('img');
                 download.title = "download image"
@@ -93,7 +96,7 @@ function Initialrender() {
                     this.onerror = null;
                 }
                 image.title = geckos[i];
-                image.src = "./geckos/" + geckos[i];
+                image.src = "./geckos/" + name;
                 image.alt = geckos[i];
                 image.loading = "lazy";
 

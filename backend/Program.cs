@@ -17,8 +17,6 @@ namespace geckoimagesBackend
 {
     class Program
     {
-        static readonly string[] Scopes = { DriveService.Scope.DriveReadonly };
-
         static void Main(string[] args)
         {
             Check check = new Check();

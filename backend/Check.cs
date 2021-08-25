@@ -37,6 +37,7 @@ namespace geckoimagesBackend
             listRequest.OrderBy = "name desc";
 
             int count = 0;
+            int updateCount = 0;
 
             try
             {
@@ -56,13 +57,47 @@ namespace geckoimagesBackend
                             //escapes comma character which is used for database then adds to database
                             geckos.Add(a.Name.Replace(",", @"\,"));
 
+                            string name = a.Name.Remove(3);
+                            if (name.Contains("b")) name = a.Name.Remove(4);
+
                             //downloads file
                             using var fileStream = new FileStream(
-                                $"../../../../public/geckos/{a.Name}",
+                                $"../../../../public/geckos/{name}.{a.Name.Split(".").Last()}",
                                 FileMode.Create,
                                 FileAccess.Write);
                             await driveService.Files.Get(a.Id).DownloadAsync(fileStream);
                             fileStream.Close();
+                        }
+                        //else if file matches submission naming convention
+                        else if (new Regex(@".+ - .+").Match(a.Name).Success)
+                        {
+                            updateCount++;
+
+                            //new file to update
+                            Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File();
+
+                            //splits name and subsplits it
+                            List<string> splitName = a.Name.Split(" - ").ToList();
+
+                            List<string> nameSplit = splitName.Last().Split(".").ToList();
+
+                            string extension = nameSplit.Last();
+
+                            nameSplit.Remove(extension);
+
+                            //updates description
+                            file.Description = string.Join(".", nameSplit);
+
+                            splitName.Remove(splitName.Last());
+
+                            //updates name
+                            file.Name = string.Join(" - ", splitName) + "." + extension;
+
+                            //keeps same parents
+                            file.Parents = a.Parents;
+
+                            //updates file in drive
+                            driveService.Files.Update(file, a.Id).Execute();
                         }
                     }
 
@@ -77,9 +112,9 @@ namespace geckoimagesBackend
 
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("drive check failed");
+                Console.WriteLine("drive check failed, reason: " + ex.ToString());
             }
 
             if (count != 0)
@@ -92,7 +127,7 @@ namespace geckoimagesBackend
                 await deploy();
             }
 
-            Console.WriteLine($"Done, added {count} files");
+            Console.WriteLine($"Done, added {count} files, updated {updateCount} files in submissions folder");
         }
 
         private async Task deploy()
