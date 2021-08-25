@@ -1,16 +1,16 @@
 @font-face {
     font-family: roboto;
-    src: url("./RobotoSlab-Regular.ttf");
+    src: url("./assets/RobotoSlab-Regular.ttf");
 }
 
 @font-face {
     font-family: robotoL;
-    src: url("./RobotoSlab-Light.ttf");
+    src: url("./assets/RobotoSlab-Light.ttf");
 }
 
 @font-face {
     font-family: robotoM;
-    src: url("./RobotoMono-Light.ttf");
+    src: url("./assets/RobotoMono-Light.ttf");
 }
 
 .navbar {
@@ -251,7 +251,7 @@ p {
 }
 
 body {
-    background-image: url("./background.png");
+    background-image: url("./assets/background.png");
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
