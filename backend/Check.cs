@@ -82,20 +82,20 @@ namespace geckoimagesBackend
                 Console.WriteLine("drive check failed");
             }
 
-            if (geckos.Count != 0)
+            if (count != 0)
             {
                 //writes updated list to database
                 StreamWriter dbWrite = new StreamWriter(@"../../../../public/geckos/db.txt");
                 await dbWrite.WriteAsync(string.Join(" , ", geckos));
                 dbWrite.Close();
 
-                deploy();
+                await deploy();
             }
 
             Console.WriteLine($"Done, added {count} files");
         }
 
-        private void deploy()
+        private async Task deploy()
         {
             //ensure that the firebase cli is globally installed via npm (run `npm install -g firebase-tools`) or else this will error
             using (Process process = new Process())
@@ -111,7 +111,7 @@ namespace geckoimagesBackend
                 Thread.Sleep(10000);
 
                 //runs deploy command
-                process.StandardInput.WriteLine(@"firebase deploy --only hosting:geckos");
+                await process.StandardInput.WriteLineAsync(@"firebase deploy --only hosting:geckos");
             };
         }
 
