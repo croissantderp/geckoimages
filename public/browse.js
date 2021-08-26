@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () { Initialrender(); initiate(); });
 
+var params;
 var query = "";
 var currentQuery = "";
 
@@ -18,6 +19,20 @@ function initiate() {
         query = $(this).val();
     });
 
+    document.getElementById('searchBar').onkeypress = function (e) {
+        if (!e) e = window.event;
+        var keyCode = e.code || e.key;
+        if (keyCode == 'Enter') {
+
+            if (query != "") {
+                document.location = "browse.html?" + params.toString();
+            }
+            else {
+                document.location = "browse.html";
+            }
+        }
+    }
+
     setInterval(queueSearch, 500);
 }
 
@@ -33,6 +48,7 @@ var geckoList = {};
 var geckoDiv;
 
 function render(query = "") {
+    params.set("q", query);
     for (let i = 0; i < geckos.length; i++) {
         if (geckos[i].toLowerCase().includes(query.toString().toLowerCase().replace(" ", "_"))) {
             geckoList[geckos[i]].style.display = "inline-grid";
@@ -44,11 +60,79 @@ function render(query = "") {
 }
 
 function Initialrender() {
+    params = new URLSearchParams(window.location.href.split("?")[1]);
 
     $.get("./geckos/db.txt", function (data) {
         geckos = data.split(" , ");
 
-        geckos.sort();
+        let az = document.getElementById("az");
+
+        let num = document.getElementById("num");
+
+        switch (params.get('sort')) {
+            case "09":
+                geckos.sort();
+                break;
+
+            case "90":
+                numReversed = true;
+                num.textContent = "9-0"
+
+                geckos.sort();
+                geckos.reverse();
+                break;
+
+            case "az":
+                azSelected = true;
+                num.className = "unselected";
+                az.className = "selected";
+
+                geckos.sort(function (a, b) {
+                    c = a.split("_");
+                    d = b.split("_");
+
+                    c.shift();
+                    d.shift();
+
+                    if (c.join("_") < d.join("_")) return -1;
+                    if (c.join("_") > d.join("_")) return 1;
+                    else return 0;
+                });
+                break;
+
+            case "za":
+                azSelected = true;
+                azReversed = true;
+                num.className = "unselected";
+                az.className = "selected";
+                az.textContent = "Z-A"
+
+                geckos.sort(function (a, b) {
+                    c = a.split("_");
+                    d = b.split("_");
+
+                    c.shift();
+                    d.shift();
+
+                    if (c.join("_") < d.join("_")) return -1;
+                    if (c.join("_") > d.join("_")) return 1;
+                    else return 0;
+                });
+                geckos.reverse();
+                break;
+
+            default:
+                geckos.sort();
+                break;
+        }
+
+        var noquery = true;
+
+        if (params.get("q") != null) {
+            query = params.get("q");
+            document.getElementById("search").value = query;
+            noquery = false;
+        }
 
         geckoDiv = document.getElementById("geckoDiv");
 
@@ -107,6 +191,15 @@ function Initialrender() {
                 card.appendChild(subtitle);
                 card.appendChild(image);
                 card.appendChild(div);
+
+                if (!noquery) {
+                    if (geckos[i].toLowerCase().includes(query.toLowerCase().replace(" ", "_"))) {
+                        card.style.display = "inline-grid";
+                    }
+                    else {
+                        card.style.display = "none";
+                    }
+                }
 
                 geckoDiv.appendChild(card);
 
@@ -171,16 +264,19 @@ function numButton() {
         }
     }
 }
+
 function sortElements(method) {
     geckoDiv.innerHTML = "";
 
     switch (method) {
         case "09":
             geckos.sort();
+            params.set("sort", "09");
             break;
         case "90":
             geckos.sort();
             geckos.reverse();
+            params.set("sort", "90");
             break;
         case "az":
             geckos.sort(function (a, b) {
@@ -194,6 +290,7 @@ function sortElements(method) {
                 if (c.join("_") > d.join("_")) return 1;
                 else return 0;
             });
+            params.set("sort", "az");
             break;
         case "za":
             geckos.sort(function (a, b) {
@@ -208,6 +305,7 @@ function sortElements(method) {
                 else return 0;
             });
             geckos.reverse();
+            params.set("sort", "za");
             break;
     }
 
