@@ -12,11 +12,9 @@ function initiate() {
 
     //Listen for the event
     $("input#search").on("keyup", function (e) {
-        // Set Timeout
-        clearTimeout($.data(this, 'timer'));
-
         // Set Search String
         query = $(this).val();
+        params.set("q", $(this).val());
     });
 
     document.getElementById('searchBar').onkeypress = function (e) {
@@ -48,7 +46,6 @@ var geckoList = {};
 var geckoDiv;
 
 function render(query = "") {
-    params.set("q", query);
     for (let i = 0; i < geckos.length; i++) {
         if (geckos[i].toLowerCase().includes(query.toString().toLowerCase().replace(" ", "_"))) {
             geckoList[geckos[i]].style.display = "inline-grid";
