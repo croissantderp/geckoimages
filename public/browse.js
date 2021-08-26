@@ -308,6 +308,7 @@ function sortElements(method) {
             params.set("sort", "za");
             break;
     }
+    window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
 
     for (let i = 0; i < geckos.length; i++) {
         geckoDiv.appendChild(geckoList[geckos[i]]);
