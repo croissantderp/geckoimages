@@ -1,3 +1,7 @@
+@-ms-viewport {
+    width: device-width;
+}
+
 @font-face {
     font-family: roboto;
     src: url("./assets/RobotoSlab-Regular.ttf");
