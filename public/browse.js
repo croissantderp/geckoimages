@@ -47,11 +47,11 @@ var geckoDiv;
 
 function render(query = "") {
     for (let i = 0; i < geckos.length; i++) {
-        if (geckos[i].toLowerCase().includes(query.toString().toLowerCase().replace(" ", "_"))) {
-            geckoList[geckos[i]].style.display = "inline-grid";
+        if (geckos[i]["name"].toLowerCase().includes(query.toString().toLowerCase().replace(" ", "_"))) {
+            geckoList[geckos[i]["name"]].style.display = "inline-grid";
         }
         else {
-            geckoList[geckos[i]].style.display = "none";
+            geckoList[geckos[i]["name"]].style.display = "none";
         }
     }
 }
@@ -59,8 +59,8 @@ function render(query = "") {
 function Initialrender() {
     params = new URLSearchParams(window.location.href.split("?")[1]);
 
-    $.get("./geckos/db.txt", function (data) {
-        geckos = data.split(" , ");
+    $.get("./geckos/db.json", function (data) {
+        geckos = JSON.parse(data);
 
         let az = document.getElementById("az");
 
@@ -68,14 +68,22 @@ function Initialrender() {
 
         switch (params.get('sort')) {
             case "09":
-                geckos.sort();
+                geckos.sort(function (a, b) {
+                    if (a["name"] > b["name"]) return 1;
+                    if (a["name"] < b["name"]) return -1;
+                    else return 0;
+                });
                 break;
 
             case "90":
                 numReversed = true;
                 num.textContent = "9-0"
 
-                geckos.sort();
+                geckos.sort(function (a, b) {
+                    if (a["name"] > b["name"]) return 1;
+                    if (a["name"] < b["name"]) return -1;
+                    else return 0;
+                });
                 geckos.reverse();
                 break;
 
@@ -85,8 +93,8 @@ function Initialrender() {
                 az.className = "selected";
 
                 geckos.sort(function (a, b) {
-                    c = a.split("_");
-                    d = b.split("_");
+                    c = a["name"].split("_");
+                    d = b["name"].split("_");
 
                     c.shift();
                     d.shift();
@@ -105,8 +113,8 @@ function Initialrender() {
                 az.textContent = "Z-A"
 
                 geckos.sort(function (a, b) {
-                    c = a.split("_");
-                    d = b.split("_");
+                    c = a["name"].split("_");
+                    d = b["name"].split("_");
 
                     c.shift();
                     d.shift();
@@ -119,7 +127,11 @@ function Initialrender() {
                 break;
 
             default:
-                geckos.sort();
+                geckos.sort(function (a, b) {
+                    if (a["name"] > b["name"]) return 1;
+                    if (a["name"] < b["name"]) return -1;
+                    else return 0;
+                });
                 break;
         }
 
@@ -135,9 +147,9 @@ function Initialrender() {
 
         for (let i = 0; i < geckos.length; i++) {
 
-            if ((geckos[i] != '' && geckos[i] != null)) {
+            if ((geckos[i]["name"] != '' && geckos[i]["name"] != null)) {
 
-                let name = geckos[i].split("_")[0] + "." + geckos[i].split(".")[geckos[i].split(".").length - 1];
+                let name = geckos[i]["name"].split("_")[0] + "." + geckos[i]["name"].split(".")[geckos[i]["name"].split(".").length - 1];
 
                 //constructing bottom div
                 let download = document.createElement('a');
@@ -150,17 +162,22 @@ function Initialrender() {
 
                 download.appendChild(downloadIcon);
 
-                let folder = document.createElement('img');
+                let folder = document.createElement('a');
+                folder.href = geckos[i]["driveLink"];
+
+                let folderIcon = document.createElement('img');
                 folder.title = "view in Google Drive"
-                folder.src = "assets/folder.png";
-                folder.alt = "drive folder";
+                folderIcon.src = "assets/folder.png";
+                folderIcon.alt = "drive folder";
+
+                folder.appendChild(folderIcon);
 
                 let div = document.createElement('div');
                 div.appendChild(download);
                 div.appendChild(folder);
 
                 //titles
-                let temp = geckos[i].split("_");
+                let temp = geckos[i]["name"].split("_");
 
                 let title = document.createElement("h3");
                 title.innerHTML = temp[0];
@@ -176,9 +193,9 @@ function Initialrender() {
                     this.src = "./geckos/placeholder.png"
                     this.onerror = null;
                 }
-                image.title = geckos[i];
+                image.title = geckos[i]["name"];
                 image.src = "./geckos/" + name;
-                image.alt = geckos[i];
+                image.alt = geckos[i]["name"];
                 image.loading = "lazy";
 
                 let card = document.createElement('div');
@@ -190,7 +207,7 @@ function Initialrender() {
                 card.appendChild(div);
 
                 if (!noquery) {
-                    if (geckos[i].toLowerCase().includes(query.toLowerCase().replace(" ", "_"))) {
+                    if (geckos[i]["name"].toLowerCase().includes(query.toLowerCase().replace(" ", "_"))) {
                         card.style.display = "inline-grid";
                     }
                     else {
@@ -200,7 +217,7 @@ function Initialrender() {
 
                 geckoDiv.appendChild(card);
 
-                geckoList[geckos[i]] = card;
+                geckoList[geckos[i]["name"]] = card;
             }
             else {
                 geckos.splice(i--, 1);
@@ -267,18 +284,26 @@ function sortElements(method) {
 
     switch (method) {
         case "09":
-            geckos.sort();
+            geckos.sort(function (a, b) {
+                if (a["name"] > b["name"]) return 1;
+                if (a["name"] < b["name"]) return -1;
+                else return 0;
+            });
             params.set("sort", "09");
             break;
         case "90":
-            geckos.sort();
+            geckos.sort(function (a, b) {
+                if (a["name"] > b["name"]) return 1;
+                if (a["name"] < b["name"]) return -1;
+                else return 0;
+            });
             geckos.reverse();
             params.set("sort", "90");
             break;
         case "az":
             geckos.sort(function (a, b) {
-                c = a.split("_");
-                d = b.split("_");
+                c = a["name"].split("_");
+                d = b["name"].split("_");
 
                 c.shift();
                 d.shift();
@@ -291,8 +316,8 @@ function sortElements(method) {
             break;
         case "za":
             geckos.sort(function (a, b) {
-                c = a.split("_");
-                d = b.split("_");
+                c = a["name"].split("_");
+                d = b["name"].split("_");
 
                 c.shift();
                 d.shift();
@@ -308,6 +333,6 @@ function sortElements(method) {
     window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
 
     for (let i = 0; i < geckos.length; i++) {
-        geckoDiv.appendChild(geckoList[geckos[i]]);
+        geckoDiv.appendChild(geckoList[geckos[i]["name"]]);
     }
 }

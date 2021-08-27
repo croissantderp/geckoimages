@@ -12,19 +12,34 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Drive.v3.Data;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace geckoimagesBackend
 {
+    public class gecko
+    {
+        public string name { get; set; }
+        public string author { get; set; }
+        public DateTime time { get; set; }
+        public string driveLink { get; set; }
+
+    }
+
     public class Check
     {
         public async Task checkDrive()
         {
             Console.WriteLine("Checking drive");
 
-            //gets list of geckos already in database
-            StreamReader dbRead = new StreamReader(@"../../../../public/geckos/db.txt");
-            List<string> geckos = Regex.Split(await dbRead.ReadToEndAsync(), @"\s(?<!\\)\,\s").ToList();
-            dbRead.Close();
+            List<gecko> geckos = new List<gecko>();
+
+            if (System.IO.File.Exists(@"../../../../public/geckos/db.json"))
+            {
+                //gets list of geckos already in database
+                StreamReader dbRead = new StreamReader(@"../../../../public/geckos/db.json");
+                geckos = JsonSerializer.Deserialize<List<gecko>>(dbRead.ReadToEnd()); //Regex.Split(await dbRead.ReadToEndAsync(), @"\s(?<!\\)\,\s").ToList();
+                dbRead.Close();
+            }
 
             //signs into drive
             DriveService driveService = DriveUtils.AuthenticateServiceAccount(
@@ -35,9 +50,13 @@ namespace geckoimagesBackend
             var listRequest = driveService.Files.List();
             listRequest.PageSize = 100;
             listRequest.OrderBy = "name desc";
+            listRequest.Fields = @"nextPageToken, files(*)";
 
             int count = 0;
             int updateCount = 0;
+
+            bool highestFound = false;
+            int highestGecko = 0;
 
             try
             {
@@ -50,16 +69,29 @@ namespace geckoimagesBackend
                     foreach (Google.Apis.Drive.v3.Data.File a in files)
                     {
                         //if file is not in database and name matches naming conventions
-                        if (!geckos.Contains(a.Name) && new Regex(@"^(?:b|)\d+_.+").Match(a.Name).Success)
+                        if (!geckos.Select(a => a.name).Contains(a.Name) && new Regex(@"^(?:b|)\d+_.+").Match(a.Name).Success)
                         {
                             count++;
 
-                            //escapes comma character which is used for database then adds to database
-                            geckos.Add(a.Name.Replace(",", @"\,"));
+                            if (!highestFound && new Regex(@"^\d+_.+").Match(a.Name).Success)
+                            {
+                                highestGecko = int.Parse(a.Name.Remove(3));
+                                highestFound = true;
+                            }
+
+                            //adds gecko to database
+                            geckos.Add(new gecko
+                            { 
+                                name = a.Name,
+                                author = a.Description != null && a.Description != "" ? a.Description : a.Owners.First().DisplayName,
+                                time = DateTime.Parse(a.CreatedTimeRaw),
+                                driveLink = a.WebViewLink
+                            });
 
                             string name = a.Name.Remove(3);
                             if (name.Contains("b")) name = a.Name.Remove(4);
-
+                            
+                            
                             //downloads file
                             using var fileStream = new FileStream(
                                 $"../../../../public/geckos/{name}.{a.Name.Split(".").Last()}",
@@ -67,7 +99,8 @@ namespace geckoimagesBackend
                                 FileAccess.Write);
                             await driveService.Files.Get(a.Id).DownloadAsync(fileStream);
                             fileStream.Close();
-                        }
+                            
+                            }
                         //else if file matches submission naming convention
                         else if (new Regex(@".+ - .+").Match(a.Name).Success)
                         {
@@ -91,10 +124,8 @@ namespace geckoimagesBackend
                             splitName.Remove(splitName.Last());
 
                             //updates name
-                            file.Name = string.Join(" - ", splitName).Replace(" ", "_") + "." + extension;
-
-                            //keeps same parents
-                            file.Parents = a.Parents;
+                            file.Name = highestGecko + "_" + string.Join(" - ", splitName).Replace(" ", "_") + "." + extension;
+                            highestGecko++;
 
                             //updates file in drive
                             driveService.Files.Update(file, a.Id).Execute();
@@ -109,7 +140,6 @@ namespace geckoimagesBackend
                     {
                         break;
                     }
-
                 }
             }
             catch (Exception ex)
@@ -120,11 +150,11 @@ namespace geckoimagesBackend
             if (count != 0)
             {
                 //writes updated list to database
-                StreamWriter dbWrite = new StreamWriter(@"../../../../public/geckos/db.txt");
-                await dbWrite.WriteAsync(string.Join(" , ", geckos));
+                StreamWriter dbWrite = new StreamWriter(@"../../../../public/geckos/db.json");
+                await dbWrite.WriteAsync(JsonSerializer.Serialize(geckos, new JsonSerializerOptions{ WriteIndented = true }));
                 dbWrite.Close();
 
-                await deploy();
+                //await deploy();
             }
 
             Console.WriteLine($"Done, added {count} files, updated {updateCount} files in submissions folder");
