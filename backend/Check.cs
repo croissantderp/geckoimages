@@ -19,6 +19,7 @@ namespace geckoimagesBackend
 {
     public class gecko
     {
+        public string path { get; set; }
         public string name { get; set; }
         public string author { get; set; }
         public DateTime time { get; set; }
@@ -92,19 +93,19 @@ namespace geckoimagesBackend
                                 highestFound = true;
                             }
 
+                            string name = a.Name.Remove(3);
+                            if (name.Contains("b")) name = a.Name.Remove(4);
+
                             //adds gecko to database
                             geckos.Add(new gecko
                             { 
+                                path = name + "." + a.Name.Split(".").Last(),
                                 name = a.Name,
                                 author = a.Description != null && a.Description != "" ? a.Description : a.Owners.First().DisplayName,
                                 time = DateTime.Parse(a.CreatedTimeRaw),
                                 driveLink = a.WebViewLink
                             });
 
-                            string name = a.Name.Remove(3);
-                            if (name.Contains("b")) name = a.Name.Remove(4);
-                            
-                            
                             //downloads file
                             using var fileStream = new FileStream(
                                 $"C:/xampp/htdocs/{name}.{a.Name.Split(".").Last()}",
@@ -112,7 +113,6 @@ namespace geckoimagesBackend
                                 FileAccess.Write);
                             await driveService.Files.Get(a.Id).DownloadAsync(fileStream);
                             fileStream.Close();
-                            
                             }
                         //else if file matches submission naming convention
                         else if (new Regex(@".+ - .+").Match(a.Name).Success)

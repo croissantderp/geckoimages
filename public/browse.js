@@ -59,7 +59,7 @@ function render(query = "") {
 function Initialrender() {
     params = new URLSearchParams(window.location.href.split("?")[1]);
 
-    $.get("./geckos/db.json", function (data) {
+    $.get("https://geckoimages.ddns.net/db.json", function (data) {
         geckos = JSON.parse(data);
 
         let az = document.getElementById("az");
@@ -153,7 +153,7 @@ function Initialrender() {
 
                 //constructing bottom div
                 let download = document.createElement('a');
-                download.href = "./geckos/" + name;
+                download.href = "https://geckoimages.ddns.net/" + geckos[i]["path"];
 
                 let downloadIcon = document.createElement('img');
                 download.title = "download image"
@@ -190,11 +190,11 @@ function Initialrender() {
                 //creating main image
                 let image = document.createElement('img');
                 image.onerror = function () {
-                    this.src = "./geckos/placeholder.png"
+                    this.src = "./assets/placeholder.png"
                     this.onerror = null;
                 }
                 image.title = geckos[i]["name"];
-                image.src = "./geckos/" + name;
+                image.src = "https://geckoimages.ddns.net/" + geckos[i]["path"];
                 image.alt = geckos[i]["name"];
                 image.loading = "lazy";
 
