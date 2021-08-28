@@ -7,7 +7,7 @@ namespace geckoimagesBackend
         static void Main(string[] args)
         {
             Check check = new Check();
-            check.checkDrive().GetAwaiter().GetResult();
+            check.setTimer().GetAwaiter().GetResult();
         }
     }
 }

@@ -11,3 +11,6 @@ geckoimagesworker-b3ff87875739.json
 firebase-debug.log
 package-lock.json
 firebase-tools-instant-win.exe
+backend/Properties/PublishProfiles/FolderProfile.pubxml
+backend/Properties/PublishProfiles/FolderProfile.pubxml.user
+backend/geckoimagesBackend.csproj.user

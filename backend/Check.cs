@@ -13,6 +13,7 @@ using Google.Apis.Services;
 using Google.Apis.Drive.v3.Data;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Timers;
 
 namespace geckoimagesBackend
 {
@@ -27,24 +28,36 @@ namespace geckoimagesBackend
 
     public class Check
     {
+        public async Task setTimer()
+        {
+            System.Timers.Timer t = new System.Timers.Timer(10 * 60 * 1000);
+            t.Elapsed += async (sender, e) => await checkDrive();
+            t.AutoReset = true;
+            t.Start();
+
+            await checkDrive();
+
+            await Task.Delay(-1);
+        }
+
         public async Task checkDrive()
         {
             Console.WriteLine("Checking drive");
 
             List<gecko> geckos = new List<gecko>();
 
-            if (System.IO.File.Exists(@"../../../../public/geckos/db.json"))
+            if (System.IO.File.Exists(@"C:/xampp/htdocs/db.json"))
             {
                 //gets list of geckos already in database
-                StreamReader dbRead = new StreamReader(@"../../../../public/geckos/db.json");
-                geckos = JsonSerializer.Deserialize<List<gecko>>(dbRead.ReadToEnd()); //Regex.Split(await dbRead.ReadToEndAsync(), @"\s(?<!\\)\,\s").ToList();
+                StreamReader dbRead = new StreamReader(@"C:/xampp/htdocs/db.json");
+                geckos = JsonSerializer.Deserialize<List<gecko>>(dbRead.ReadToEnd());
                 dbRead.Close();
             }
 
             //signs into drive
             DriveService driveService = DriveUtils.AuthenticateServiceAccount(
                 "geckoimagerworker@geckoimagesworker.iam.gserviceaccount.com",
-                "../../../../geckoimagesworker-b3ff87875739.json");
+                "geckoimagesworker-b3ff87875739.json");
 
             //requests all files in batches of 100
             var listRequest = driveService.Files.List();
@@ -94,7 +107,7 @@ namespace geckoimagesBackend
                             
                             //downloads file
                             using var fileStream = new FileStream(
-                                $"../../../../public/geckos/{name}.{a.Name.Split(".").Last()}",
+                                $"C:/xampp/htdocs/{name}.{a.Name.Split(".").Last()}",
                                 FileMode.Create,
                                 FileAccess.Write);
                             await driveService.Files.Get(a.Id).DownloadAsync(fileStream);
@@ -150,7 +163,7 @@ namespace geckoimagesBackend
             if (count != 0)
             {
                 //writes updated list to database
-                StreamWriter dbWrite = new StreamWriter(@"../../../../public/geckos/db.json");
+                StreamWriter dbWrite = new StreamWriter(@"C:/xampp/htdocs/db.json");
                 await dbWrite.WriteAsync(JsonSerializer.Serialize(geckos, new JsonSerializerOptions{ WriteIndented = true }));
                 dbWrite.Close();
 
@@ -160,6 +173,7 @@ namespace geckoimagesBackend
             Console.WriteLine($"Done, added {count} files, updated {updateCount} files in submissions folder");
         }
 
+        /*
         private async Task deploy()
         {
             //ensure that the firebase cli is globally installed via npm (run `npm install -g firebase-tools`) or else this will error
@@ -179,6 +193,6 @@ namespace geckoimagesBackend
                 await process.StandardInput.WriteLineAsync(@"firebase deploy --only hosting:geckos");
             };
         }
-
+        */
     }
 }
