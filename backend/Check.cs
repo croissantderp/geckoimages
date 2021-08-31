@@ -31,7 +31,7 @@ namespace geckoimagesBackend
     {
         public async Task setTimer()
         {
-            System.Timers.Timer t = new System.Timers.Timer(10 * 60 * 1000);
+            System.Timers.Timer t = new System.Timers.Timer(5 * 60 * 1000);
             t.Elapsed += async (sender, e) => await checkDrive();
             t.AutoReset = true;
             t.Start();
