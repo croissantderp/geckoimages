@@ -37,14 +37,13 @@ namespace geckoimagesBackend
             t.Start();
 
             await checkDrive();
-
-            await Task.Delay(-1);
         }
 
         public async Task checkDrive()
         {
             Console.WriteLine("Checking drive");
 
+            List<string> namesCalled = new List<string>();
             List<gecko> geckos = new List<gecko>();
 
             if (System.IO.File.Exists(@"C:/xampp/htdocs/db.json"))
@@ -83,37 +82,90 @@ namespace geckoimagesBackend
                     foreach (Google.Apis.Drive.v3.Data.File a in files)
                     {
                         //if file is not in database and name matches naming conventions
-                        if (!geckos.Select(a => a.name).Contains(a.Name) && new Regex(@"^(?:b|)\d+_.+").Match(a.Name).Success)
+                        if (new Regex(@"^(?:b|)\d+_.+").Match(a.Name).Success)
                         {
-                            count++;
+                            string description = a.Description != null && a.Description != "" ? a.Description : a.Owners.First().DisplayName;
+                            DateTime time = DateTime.Parse(a.CreatedTimeRaw);
 
-                            if (!highestFound && new Regex(@"^\d+_.+").Match(a.Name).Success)
+                            if (!geckos.Select(a => a.name).Contains(a.Name))
                             {
-                                highestGecko = int.Parse(a.Name.Remove(3));
-                                highestFound = true;
+                                count++;
+
+                                if (!highestFound && new Regex(@"^\d+_.+").Match(a.Name).Success)
+                                {
+                                    highestGecko = int.Parse(a.Name.Remove(3));
+                                    highestFound = true;
+                                }
+
+                                string name = a.Name.Remove(3);
+                                if (name.Contains("b")) name = a.Name.Remove(4);
+
+                                //adds gecko to database
+                                geckos.Add(new gecko
+                                {
+                                    path = name + "." + a.Name.Split(".").Last(),
+                                    name = a.Name,
+                                    author = description,
+                                    time = time,
+                                    driveLink = a.WebViewLink
+                                });
+
+                                //downloads file
+                                using var fileStream = new FileStream(
+                                    $"C:/xampp/htdocs/{name}.{a.Name.Split(".").Last()}",
+                                    FileMode.Create,
+                                    FileAccess.Write);
+                                await driveService.Files.Get(a.Id).DownloadAsync(fileStream);
+                                fileStream.Close();
+                            }
+                            else
+                            {
+                                int index = geckos.FindIndex(b => b.name == a.Name);
+                                if (geckos[index].time != time)
+                                {
+                                    geckos[index].time = time;
+                                }
+                                if (geckos[index].author != description)
+                                {
+                                    geckos[index].author = description;
+                                }
+                                if (!System.IO.File.Exists($"C:/xampp/htdocs/{geckos[index].path}"))
+                                {
+                                    geckos.RemoveAt(index);
+
+                                    count++;
+
+                                    if (!highestFound && new Regex(@"^\d+_.+").Match(a.Name).Success)
+                                    {
+                                        highestGecko = int.Parse(a.Name.Remove(3));
+                                        highestFound = true;
+                                    }
+
+                                    string name = a.Name.Remove(3);
+                                    if (name.Contains("b")) name = a.Name.Remove(4);
+
+                                    //adds gecko to database
+                                    geckos.Add(new gecko
+                                    {
+                                        path = name + "." + a.Name.Split(".").Last(),
+                                        name = a.Name,
+                                        author = description,
+                                        time = time,
+                                        driveLink = a.WebViewLink
+                                    });
+
+                                    //downloads file
+                                    using var fileStream = new FileStream(
+                                        $"C:/xampp/htdocs/{name}.{a.Name.Split(".").Last()}",
+                                        FileMode.Create,
+                                        FileAccess.Write);
+                                    await driveService.Files.Get(a.Id).DownloadAsync(fileStream);
+                                    fileStream.Close();
+                                }
                             }
 
-                            string name = a.Name.Remove(3);
-                            if (name.Contains("b")) name = a.Name.Remove(4);
-
-                            //adds gecko to database
-                            geckos.Add(new gecko
-                            { 
-                                path = name + "." + a.Name.Split(".").Last(),
-                                name = a.Name,
-                                author = a.Description != null && a.Description != "" ? a.Description : a.Owners.First().DisplayName,
-                                time = DateTime.Parse(a.CreatedTimeRaw),
-                                driveLink = a.WebViewLink
-                            });
-
-                            //downloads file
-                            using var fileStream = new FileStream(
-                                $"C:/xampp/htdocs/{name}.{a.Name.Split(".").Last()}",
-                                FileMode.Create,
-                                FileAccess.Write);
-                            await driveService.Files.Get(a.Id).DownloadAsync(fileStream);
-                            fileStream.Close();
-                            }
+                            namesCalled.Add(a.Name);
+                        }
                         //else if file matches submission naming convention
                         else if (new Regex(@".+ - .+").Match(a.Name).Success)
                         {
@@ -158,6 +210,16 @@ namespace geckoimagesBackend
             catch (Exception ex)
             {
                 Console.WriteLine("drive check failed, reason: " + ex.ToString());
+            }
+
+            //remove unfound geckos
+            foreach (gecko gecko in geckos)
+            {
+                if (!namesCalled.Contains(gecko.name))
+                {
+                    System.IO.File.Delete($"C:/xampp/htdocs/{gecko.path}");
+                    geckos.Remove(gecko);
+                }
             }
 
             if (count != 0)
