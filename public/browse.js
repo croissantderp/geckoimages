@@ -60,6 +60,9 @@ function Initialrender() {
     params = new URLSearchParams(window.location.href.split("?")[1]);
 
     $.get("https://geckoimages.ddns.net/db.json", function (data) {
+
+        document.getElementById("APICheck").innerHTML = '';
+
         geckos = JSON.parse(data);
 
         let az = document.getElementById("az");
@@ -225,6 +228,7 @@ function Initialrender() {
         }
 
     }, "text");
+
 }
 
 var azSelected = false;
