@@ -153,7 +153,7 @@ function Initialrender() {
 
                 //constructing bottom div
                 let download = document.createElement('a');
-                download.href = "https://geckoimages.ddns.net/" + geckos[i]["path"];
+                download.href = "https://geckoimages.ddns.net/" + geckos[i]["url"];
 
                 let downloadIcon = document.createElement('img');
                 download.title = "download image"
@@ -194,7 +194,7 @@ function Initialrender() {
                     this.onerror = null;
                 }
                 image.title = geckos[i]["name"];
-                image.src = "https://geckoimages.ddns.net/" + geckos[i]["path"];
+                image.src = "https://geckoimages.ddns.net/" + geckos[i]["url"];
                 image.alt = geckos[i]["name"];
                 image.loading = "lazy";
 
@@ -330,7 +330,7 @@ function sortElements(method) {
             params.set("sort", "za");
             break;
     }
-    window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
+    window.history.replaceState({}, '', `${location.urlname}?${params.toString()}`);
 
     for (let i = 0; i < geckos.length; i++) {
         geckoDiv.appendChild(geckoList[geckos[i]["name"]]);
