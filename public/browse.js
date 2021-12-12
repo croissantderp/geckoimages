@@ -166,7 +166,7 @@ function Initialrender() {
                 download.appendChild(downloadIcon);
 
                 let folder = document.createElement('a');
-                folder.href = geckos[i]["driveLink"];
+                folder.href = geckos[i]["driveUrl"];
 
                 let folderIcon = document.createElement('img');
                 folder.title = "view in Google Drive"
